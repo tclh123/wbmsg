@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#from google.appengine.ext import webapp
+#
+#
+#class MainHandler(webapp.RequestHandler):
+#    def get(self):
+#        self.response.out.write('Hello world!')
+#
+#
+#app = webapp.WSGIApplication([('/', MainHandler)],
+#                             debug=True)
+
+import web
+
+urls = (
+#    '/', 'index',
+    '/(|list)', 'list',
+    '/(new|send)', 'new',
+    '/chat', 'chat',
+    '/del', 'destroy',
+    )
+#render = web.template.render('templates/')
+
+class index:
+    def GET(self):
+        return 'welcome to wbmsg | code by tclh123'
+#        web.header('Content-type', 'text/html')
+#        name = 'tclh123'
+#        return render.index(name)
+
+class list:
+    def GET(self, url):
+        return 'list'
+
+class new:
+    def GET(self, url):
+        return 'new|send'
+
+class chat:
+    def GET(self):
+        return 'chat'
+
+class destroy:
+    def GET(self):
+        return 'del'
+
+app = web.application(urls, globals()).wsgifunc()
