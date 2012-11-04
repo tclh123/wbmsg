@@ -12,10 +12,10 @@ import sys
 render = web.template.render('templates')
 
 urls = (
-    '/(|list)', 'list',
-    '/(new|send)', 'new',
-    '/chat', 'chat',
-    '/del', 'destroy',
+    '/(|list)', 'List',
+    '/(new|send)', 'New',
+    '/chat', 'Chat',
+    '/del', 'Delete',
     )
 
 #   TODO： GAE 怎么用 hook？是 web.header()在GAE上无效啊?...为毛
@@ -23,7 +23,7 @@ urls = (
 #    web.header("Content-type","text/html; charset=utf-8")
 #web.application(urls, globals()).add_processor(web.loadhook(customhook))
 
-class index:
+class Index:
     def GET(self):
         """
         wbmsg. ver - 1.0
@@ -43,7 +43,7 @@ class index:
 #   /list: 获取个人私信列表
 #       GET(uid, token) return json(list<message>)
 #
-class list:
+class List:
     def GET(self, url):
         web.header("Content-type","text/html; charset=utf-8")
         i = web.input(uid=0, token=0)
@@ -54,7 +54,7 @@ class list:
 #   /new: 发送私信
 #       POST(uid, token, text, touid) return 1
 #
-class new:
+class New:
     """ e.g. /new?uid=1903362107&token=3_58ac1a8401cf4825abacad4c983f2c5080b1e8&touid=1659177872&text=testlo """
     def GET(self, url):
         i = web.input(uid=0, token=0, touid=0, text=0)       #TODO 删掉
@@ -70,7 +70,7 @@ class new:
 #   /chat: 获取个人与某用户的所有私信（聊天列表）
 #       GET(uid, token, touid) return json(list<message>)
 #
-class chat:
+class Chat:
     """ e.g. /chat?uid=1903362107&token=3_58ac1a8401cf4825abacad4c983f2c5080b1e8&touid=1659177872 """
     def GET(self):
         web.header("Content-type","text/html; charset=utf-8")
@@ -82,7 +82,7 @@ class chat:
 #   /del:  删除个人与某用户的所有私信（于weibo.com服务器上）
 #       POST(uid, token, touid)
 #
-class destroy:
+class Delete:
     """ e.g. /del?uid=1903362107&token=3_58ac1a8401cf4825abacad4c983f2c5080b1e8&touid=1659177872 """
     def GET(self):
         i = web.input(uid=0, token=0, touid=0)
