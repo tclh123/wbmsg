@@ -8,7 +8,7 @@ def str_time():
     """时间字符串"""
     return time.strftime('[%H:%M:%S]')
 
-def SendMail(msg):
+def send_mail(msg):
     """发邮件"""
     message = mail.EmailMessage(
         sender  = 'tclh123@gmail.com',
