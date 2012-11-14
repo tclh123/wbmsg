@@ -4,7 +4,7 @@
 #UID = 'tclh123@gmail.com'
 #PWD = 'yourpassword'
 #COOKIE = 'xxxxxx'
-#WEIBO_UID = 'xxxxxx's
+#WEIBO_UID = 'xxxxxx'
 
 STATUS_MAXLEN = 140
 

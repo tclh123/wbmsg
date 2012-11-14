@@ -5,10 +5,6 @@ import web
 import json
 import services
 
-import sys
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
-
 render = web.template.render('templates')
 
 urls = (
@@ -16,7 +12,8 @@ urls = (
     '/(new|send)', 'New',
     '/chat', 'Chat',
     '/del', 'Delete',
-    )
+    '/login', 'Login'
+)
 
 #   TODO： GAE 怎么用 hook？是 web.header()在GAE上无效啊?...为毛
 #def customhook():
@@ -31,13 +28,33 @@ class Index:
         读取：GET
         写入：POST
         ----
-        token -> cookie: gsid_CTandWM, 能否通过 uid,pwd 登陆获得?: TODO.
+        token -> cookie: gsid_CTandWM
         """
         return 'welcome to wbmsg | code by tclh123'
 
 #########################
-#   Page handles
+#   Page handlers
 #########################
+
+#
+#   /login: 登陆weibo
+#       POST(username, password) return json(uid,token)
+#
+class Login:
+    def GET(self):
+        web.header("Content-type","text/html; charset=utf-8")
+        i = web.input(username=0, password=0)               #TODO 删掉
+        uid, token = services.login(i.username, i.password)
+        kv = { 'uid':uid, 'token':token }
+        return json.dumps(kv)
+
+        return '/del: pls use POST to login.'
+    def POST(self):
+        web.header("Content-type","text/html; charset=utf-8")
+        i = web.input(username=0, password=0)
+        uid, token = services.login(i.username, i.password)
+        kv = { 'uid':uid, 'token':token }
+        return json.dumps(kv)
 
 #
 #   /list: 获取个人私信列表
