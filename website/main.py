@@ -15,10 +15,6 @@ urls = (
     '/login', 'Login'
 )
 
-#   TODO： GAE 怎么用 hook？是 web.header()在GAE上无效啊?...为毛
-#def customhook():
-#    web.header("Content-type","text/html; charset=utf-8")
-#web.application(urls, globals()).add_processor(web.loadhook(customhook))
 
 class Index:
     def GET(self):
@@ -64,8 +60,16 @@ class List:
     def GET(self, url):
         web.header("Content-type","text/html; charset=utf-8")
         i = web.input(uid=0, token=0)
-        statuses = services.get_messages(i.uid, i.token)      # TODO 完成自定义类 的json解析
-        return json.dumps(statuses, ensure_ascii=False) #加了 ensure_ascii，编码终于显示正常
+        statuses = services.get_messages(i.uid, i.token)
+#        return json.dumps(statuses, ensure_ascii=False) #加了 ensure_ascii，编码终于显示正常
+        ret = []
+        for i in statuses:  #TODO sb了吧，明明是msg，为毛一直叫成status...
+            msg = {}
+            msg['uid'] = i.uid
+            msg['touid'] = i.touid
+            msg['content'] = i.content
+            ret.append(msg)
+        return json.dumps(ret, ensure_ascii=False)
 
 #
 #   /new: 发送私信
@@ -92,9 +96,17 @@ class Chat:
     def GET(self):
         web.header("Content-type","text/html; charset=utf-8")
         i = web.input(uid=0, token=0, touid=0)
-        statuses = services.message_chat(i.uid, i.token, i.touid)
-        return statuses
-
+        messages = services.message_chat(i.uid, i.token, i.touid)
+        ret = []
+        for i in messages:
+            msg = {}
+            msg['uid'] = i.uid
+            msg['touid'] = i.touid
+            msg['content'] = i.content
+            msg['is_receive'] = i.type
+            msg['time'] = i.time
+            ret.append(msg)
+        return json.dumps(ret, ensure_ascii=False)
 #
 #   /del:  删除个人与某用户的所有私信（于weibo.com服务器上）
 #       POST(uid, token, touid)

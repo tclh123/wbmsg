@@ -98,18 +98,19 @@ def get_messages(uid, token):
         pa_status = re.compile(r'说:(.*?)&nbsp;<span class="ct">')
         pa_touid = re.compile(r'/im/callchat\?uid=(\d+)')
         for status in re.findall(pa_status, html):
-            #statuses.append(model.Status(content = status))
-            statuses.append(status)
-#        for touid in re.findall(pa_touid, html):
-#            statuses[idx].touid = touid     #TODO
-#            idx += 1
+            statuses.append(model.Status(content = status))
+#            statuses.append(status)
+        for touid in re.findall(pa_touid, html):
+            statuses[idx].uid = str(uid)    #TODO 一下int64，一下string的...我已经搞不清楚了...
+            statuses[idx].touid = touid
+            idx += 1
     except:
         e = 'failed to PARSE statuses', util.str_time()
         logging.info(e)
 
     return statuses
 
-def post_message(uid, token, touid, text):
+def post_message(uid, token, touid, text):  #TODO text的长度限制200汉字
     # URL_MSG_POST
 
     http = httphelper.HttpHelper()
@@ -133,7 +134,7 @@ def message_chat(uid, token, touid):
     http.add_cookie('_T_WL', '1', '.weibo.cn')
     http.add_cookie('gsid_CTandWM', token, '.weibo.cn')
 
-    html = http.get(config.URL_MSG_Chat + '?type=record&uid=' + touid)
+    html = None
     """
 与逆风soso的聊天记录 清空
 我:试试8分钟前  转发
@@ -143,7 +144,31 @@ def message_chat(uid, token, touid):
 我:test10月15日 16:18  转发
 逆风soso:测试下啦啦啦啦03月31日 22:21  转发
     """
-    return html #TODO，正则获得私信列表
+    try:
+        #get chat msgs
+        html = http.get(config.URL_MSG_Chat + '?type=record&uid=' + touid)
+    except:
+        e = 'get chat msgs', util.str_time()
+        logging.info(e)
+    msgs = []
+    try:
+        #parse msgs
+        idx = 0
+        pa_msg = re.compile(r'<div class="c">我:(.*?)<span class="ct">|</a>:(.*?)<span class="ct">')
+#        pa_msg_send = re.compile(r'<div class="c">我:(.*?)<span class="ct">')
+#        pa_msg_receive = re.compile(r'</a>:(.*?)<span class="ct">')
+        pa_msg_time = re.compile(r'<span class="ct">(.*?)</span>&nbsp;')
+        for msg in re.findall(pa_msg, html):
+            type = 0 if msg[0] else 1
+            msgs.append(model.Message(uid = str(uid), touid = str(touid), content = msg[type], type=type))
+        for time in re.findall(pa_msg_time, html):
+            msgs[idx].time = time
+            idx += 1
+    except:
+        e = 'failed to parse msgs', util.str_time()
+        logging.info(e)
+
+    return msgs #TODO，正则获得私信列表
 
 #########################
 #   Extra
